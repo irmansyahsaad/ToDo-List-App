@@ -1,4 +1,4 @@
-package com.id.ac.unhas.todolistapp
+package id.ac.unhas.todolistapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,10 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import android.app.SearchManager
+import android.content.Context
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import id.ac.unhas.todolistapp.R
 import id.ac.unhas.todolistapp.todolist.Todolist
 import id.ac.unhas.todolistapp.util.Commons
 import id.ac.unhas.todolistapp.util.FormDialog
@@ -19,6 +23,10 @@ import kotlinx.android.synthetic.main.fragment_todo.view.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    companion object{
+        var isSortByDateCreated = true
+    }
+
     private lateinit var todoViewModel: TodoViewModel
     private lateinit var todoAdapter: TodoAdapter
 
@@ -48,6 +56,10 @@ class MainActivity : AppCompatActivity() {
 
         todoViewModel = ViewModelProvider(this).get(TodoViewModel::class.java)
 
+        swipe_refresh_layout.setOnRefreshListener {
+            refreshData()
+        }
+
         //tombol tambah data (floating action button)
         fab.setOnClickListener {
             showInsertDialog()
@@ -69,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     private fun refreshData(){
         setProgressbarVisibility(true)
         observeData()
+        swipe_refresh_layout.isRefreshing = false
     }
 
     //insert data
@@ -172,7 +185,6 @@ class MainActivity : AppCompatActivity() {
             val note = view.input_note.text.toString()
 
             val dateCreated = todolist.dateCreated
-            val prevDueTime = todolist.dueTime
 
             if (title == "" || date == "" || time == "") {
                 AlertDialog.Builder(this).setMessage(failAlertMessage).setCancelable(false)
@@ -204,8 +216,6 @@ class MainActivity : AppCompatActivity() {
                 todolist.dateCreated = dateCreated
                 todolist.dateUpdated = dateUpdated
                 todolist.dueDate = dueDate
-                todolist.dueTime = time
-
 
                 todoViewModel.updateTodo(todolist)
 
@@ -240,5 +250,43 @@ class MainActivity : AppCompatActivity() {
     private fun setProgressbarVisibility(state: Boolean) {
         if (state) progressbar.visibility = View.VISIBLE
         else progressbar.visibility = View.INVISIBLE
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        val searchView = (menu.findItem(R.id.menu_search_toolbar)).actionView as SearchView
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        searchView.queryHint = "Search tasks"
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                searchView.clearFocus()
+                todoAdapter.filter.filter(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                todoAdapter.filter.filter(newText)
+                return false
+            }
+        })
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_sort -> true
+            R.id.action_sort_date_created -> {
+                isSortByDateCreated = true
+                refreshData()
+                true
+            }
+            R.id.action_sort_due_date -> {
+                isSortByDateCreated = false
+                refreshData()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

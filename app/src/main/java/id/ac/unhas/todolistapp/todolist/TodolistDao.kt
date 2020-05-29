@@ -8,7 +8,7 @@ interface TodolistDao {
     @Query("Select * from todolist")
     fun getTodolists(): LiveData<List<Todolist>>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTodolist(todolist: Todolist)
 
     @Delete
