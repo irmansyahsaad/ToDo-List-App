@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="6dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:layout_marginStart="3dp"
+    android:layout_marginEnd="3dp"
+    android:layout_marginBottom="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:weightSum="2">
+                <TextView
+                    android:id="@+id/tv_date_created_updated"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:text="Created at 01/01/2020"
+                    android:textColor="@color/colorGray"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tv_due_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    tools:text="Due 01/01/2020"
+                    android:gravity="end"
+                    android:textColor="@color/colorGray"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="This is my to do "
+                android:textColor="@color/colorDarkGray"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/tv_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="This is my note "
+                android:textColor="@color/colorGray"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="12sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
