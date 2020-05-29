@@ -19,6 +19,7 @@ import id.ac.unhas.todolistapp.util.Commons
 import id.ac.unhas.todolistapp.util.FormDialog
 import id.ac.unhas.todolistapp.util.TodoAdapter
 import id.ac.unhas.todolistapp.util.TodoViewModel
+import id.ac.unhas.todolistapp.util.AlarmReceiver
 import kotlinx.android.synthetic.main.fragment_todo.view.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var todoViewModel: TodoViewModel
     private lateinit var todoAdapter: TodoAdapter
+    private lateinit var alarmReceiver: AlarmReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         recyclerview.layoutManager = layoutManager
 
         todoAdapter =
-            TodoAdapter() { todo, _ ->
+            TodoAdapter{ todo, _ ->
                 val options = resources.getStringArray(R.array.option_edit_delete)
                 Commons.showSelector(
                     this,
@@ -64,6 +66,8 @@ class MainActivity : AppCompatActivity() {
         fab.setOnClickListener {
             showInsertDialog()
         }
+
+        alarmReceiver = AlarmReceiver()
     }
 
     override fun onResume() {
@@ -110,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             val time = view.input_time.text.toString().trim()
             val note = view.input_note.text.toString()
 
-
+            val remindMe = view.input_remind_me.ische
 
             if (title == "" || date == "" || time == "") {
                 AlertDialog.Builder(this).setMessage(failAlertMessage).setCancelable(false)
@@ -143,10 +147,15 @@ class MainActivity : AppCompatActivity() {
                     dateCreated = dateCreated,
                     dateUpdated = dateCreated,
                     dueDate = dueDate,
-                    dueTime = time
+                    dueTime = time,
+                    remindMe = remindMe
                 )
 
                 todoViewModel.insertTodo(todo)
+
+                if (remindMe) {
+                    alarmReceiver.setReminderAlarm(this, dueDate, time,"$title is due in 1 hour")
+                }
 
                 Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
             }
@@ -168,7 +177,7 @@ class MainActivity : AppCompatActivity() {
         view.input_note.setText(todolist.note)
         view.input_due_date.setText(todolist.dueDate)
         view.input_time.setText(todolist.dueTime)
-
+        view.input_remind_me.isChecked = todolist.remindMe
 
         val dialogTitle = "Edit data"
         val toastMessage = "Data has been updated successfully"
@@ -185,6 +194,8 @@ class MainActivity : AppCompatActivity() {
             val note = view.input_note.text.toString()
 
             val dateCreated = todolist.dateCreated
+            val remindMe = view.input_remind_me
+            val prevDueTime = todolist.dueTime
 
             if (title == "" || date == "" || time == "") {
                 AlertDialog.Builder(this).setMessage(failAlertMessage).setCancelable(false)
@@ -216,8 +227,14 @@ class MainActivity : AppCompatActivity() {
                 todolist.dateCreated = dateCreated
                 todolist.dateUpdated = dateUpdated
                 todolist.dueDate = dueDate
+                todolist.dueTime = time
+                todolist.remindMe = remindMe
 
                 todoViewModel.updateTodo(todolist)
+
+                if (remindMe && prevDueTime!=time) {
+                    alarmReceiver.setReminderAlarm(this, dueDate, time,"$title is due in 1 hour")
+                }
 
                 Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
             }
