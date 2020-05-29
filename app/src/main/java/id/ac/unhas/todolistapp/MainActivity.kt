@@ -23,6 +23,9 @@ import id.ac.unhas.todolistapp.util.AlarmReceiver
 import kotlinx.android.synthetic.main.fragment_todo.view.*
 import kotlinx.android.synthetic.main.activity_main.*
 
+private val View.isChecked: Boolean
+    get() {}
+
 class MainActivity : AppCompatActivity() {
     companion object{
         var isSortByDateCreated = true
@@ -114,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             val time = view.input_time.text.toString().trim()
             val note = view.input_note.text.toString()
 
-            val remindMe = view.input_remind_me.ische
+            val remindMe = view.input_remind_me.isChecked
 
             if (title == "" || date == "" || time == "") {
                 AlertDialog.Builder(this).setMessage(failAlertMessage).setCancelable(false)
@@ -177,6 +180,7 @@ class MainActivity : AppCompatActivity() {
         view.input_note.setText(todolist.note)
         view.input_due_date.setText(todolist.dueDate)
         view.input_time.setText(todolist.dueTime)
+
         view.input_remind_me.isChecked = todolist.remindMe
 
         val dialogTitle = "Edit data"
@@ -194,7 +198,7 @@ class MainActivity : AppCompatActivity() {
             val note = view.input_note.text.toString()
 
             val dateCreated = todolist.dateCreated
-            val remindMe = view.input_remind_me
+            val remindMe = view.input_remind_me.isChecked
             val prevDueTime = todolist.dueTime
 
             if (title == "" || date == "" || time == "") {
@@ -228,7 +232,7 @@ class MainActivity : AppCompatActivity() {
                 todolist.dateUpdated = dateUpdated
                 todolist.dueDate = dueDate
                 todolist.dueTime = time
-                todolist.remindMe = remindMe
+                todolist.remindMe = remindMe.isChecked
 
                 todoViewModel.updateTodo(todolist)
 
