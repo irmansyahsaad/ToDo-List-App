@@ -71,13 +71,30 @@
         android:layout_height="wrap_content"
         android:hint="@string/time">
 
-        <com.google.android.material.checkbox.MaterialCheckBox
+        <androidx.appcompat.widget.AppCompatCheckBox
             android:id="@+id/input_remind_me"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/reminder_text"
             android:textColor="@color/colorGray"
             android:checked="true"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/InputOutline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/remind_time">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_remind_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:fontFamily="casual"
+            android:inputType="text"
+            android:longClickable="false" />
     </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

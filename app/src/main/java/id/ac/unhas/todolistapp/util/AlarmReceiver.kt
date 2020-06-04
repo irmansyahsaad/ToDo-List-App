@@ -19,8 +19,8 @@ import java.util.*
 class AlarmReceiver : BroadcastReceiver(){
 
     companion object{
-        const val EXTRA_MESSAGE = "message"
-        private const val ID_REMINDER = 100
+        val EXTRA_MESSAGE = "message"
+        var ID_REMINDER = 100
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -31,7 +31,7 @@ class AlarmReceiver : BroadcastReceiver(){
         showAlarmNotification(context, title, message, notifId)
     }
 
-    fun setReminderAlarm(context: Context, date: String, time: String, message: String) {
+    fun setReminderAlarm(context: Context, reminderType: Int, date: String, time: String, message: String) {
         if (isDateInvalid(date, "dd/MM/yy") || isDateInvalid(time, "HH:mm")) return
 
         val parsedDate = Commons.convertStringToDate("dd/MM/yy",date)
@@ -45,9 +45,22 @@ class AlarmReceiver : BroadcastReceiver(){
         val timeArray = time.split(":").toTypedArray()
 
         val calendar = Calendar.getInstance()
-        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[0]))
+
+        when(reminderType){
+            3 -> calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[0])-1)
+            4 -> calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[0])-2)
+            else -> calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dateArray[0]))
+        }
         calendar.set(Calendar.MONTH, Integer.parseInt(dateArray[1])-1)
         calendar.set(Calendar.YEAR, Integer.parseInt(dateArray[2]))
+
+        when(reminderType){
+            0 -> calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0])-1)
+            1 -> calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0])-6)
+            2 -> calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0])-12)
+            else -> calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0]))
+        }
+
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timeArray[0])-1)
         calendar.set(Calendar.MINUTE, Integer.parseInt(timeArray[1]))
         calendar.set(Calendar.SECOND, 0)
@@ -90,6 +103,16 @@ class AlarmReceiver : BroadcastReceiver(){
         }
         val notification = builder.build()
         notificationManagerCompat.notify(notifId, notification)
+        ID_REMINDER++
+    }
+
+    fun cancelAlarm(context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, AlarmReceiver::class.java)
+        val requestCode: Int = --ID_REMINDER
+        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0)
+        pendingIntent.cancel()
+        alarmManager.cancel(pendingIntent)
     }
 
 }

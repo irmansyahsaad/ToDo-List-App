@@ -77,5 +77,9 @@ object Commons {
             onClick(dialog, which)
         }.show()
     }
+    fun getReminderTimeFromCategory(timeCategory: Int): String?{
+        val mapReminderTime = mapOf(0 to "1 hour", 1 to "6 hours", 2 to "12 hours", 3 to "1 day", 4 to "2 days")
+        return mapReminderTime[timeCategory]
+    }
 
 }

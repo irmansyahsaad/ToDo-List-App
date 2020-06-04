@@ -30,5 +30,8 @@ data class Todolist(
     var dueTime: String,
 
     @ColumnInfo(name = "remind_me")
-    var remindMe: Boolean = true
+    var remindMe: Boolean = true,
+
+    @ColumnInfo(name = "remind_time")
+    var remindTime: Int = 0
 )
